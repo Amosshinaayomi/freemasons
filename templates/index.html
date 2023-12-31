@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<div class="container-fluid">
+
+    <div class="text-con text-start">
+      <h6 class="mb-4"> <small>hello  {{ firstname }} &#128075;</small></h6>
+
+      <h4>Search for Masons around you</h4>
+      <p>Narrow your search done by selecting state and a town near you</p>
+
+      <div class="row mb-3">
+        <!-- <div class="col px-3">
+            <select id="service-search" class="form-control w-auto mx-auto" name="service">
+                <option selected disabled>Services</option>
+                {% for service in services %}
+                    <option value="{{ service.service_name }}">{{ service.service_name }}</option>
+                {% endfor %}
+            </select>  
+        </div> -->
+        <div class="col">
+            <select name="state" id="state-select-search" class="form-control w-auto">
+                <option selected disabled>Select a state</option>
+                {% for state in states %}
+                    <option value="{{ state.name }}">{{ state.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select id="area-select-search" class="form-control w-auto">
+                <option selected disabled>Select an area near you</option>
+            </select>
+        </div>
+    </div>
+    
+      <div id="homemap1" style="width: 100%; height: 350px;"></div>
+
+
+      
+</div>
+{% endblock %}
+
+{% block script_src %}
+{{ url_for('static', filename='index.js') }}
+{% endblock %}
+
