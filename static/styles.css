@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: start;
+    font-size: 1rem;
+}
+
+#map {
+    height: 100%;
+}
+  
+.flex-con {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+}
+
+.profile-img {
+    width: 40vw;
+    max-width: 270px;
+    height: 30vw;
+    max-height: 270px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.text-con {
+    padding: 2rem .5rem;
+}
+
+.grid-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0vw;
+
+}
+
+.center-width {
+    max-width: 700px;
+    width: 100%;
+}
+
