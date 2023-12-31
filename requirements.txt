@@ -6,3 +6,4 @@ os-win
 requests
 json5
 geopy
+gunicorn
