@@ -160,7 +160,7 @@ def register():
     lastname = request.form.get("lastname")
     gender = request.form.get("gender")
     password = request.form.get("password")
-    confirmed_password = request.form.get("confirm_password", " to go back to registration page", "/register")
+    confirmed_password = request.form.get("confirm_password")
 
     if not firstname:
         return apology("firstname not provided", " to go back to registration page", "/register")
@@ -369,7 +369,7 @@ def edit_profile():
         if state:
             db.execute("UPDATE masons SET state = ? WHERE person_id = ?", state, session['user_id'])
         if area:
-            
+
             db.execute("UPDATE masons SET town = ? WHERE person_id = ?", area, session['user_id'])
     else:
         return apology("Please provide at least one info to edit", "go back to profile page", "/profile")
