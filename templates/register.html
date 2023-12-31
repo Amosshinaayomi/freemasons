@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create Account
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid my-5">
+    <form action="/register" method="post">
+        <div class="mb-3">
+            <input type="text" name="firstname" id="" placeholder="First name" class="form-control mx-auto w-auto" autocomplete="off">
+        </div>
+
+        <div class="mb-3">
+            <input type="text" name="lastname" id="" placeholder="Last name" class="form-control mx-auto w-auto" autocomplete="off">
+        </div>
+
+        <div class="mb-3">
+            <select name="gender" id="" class="mx-auto form-control w-auto">
+                <option selected disabled>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">female</option>
+                <option value="none">None</option>
+            </select>
+        </div>
+
+        <div class="row mb-3">
+            <input class="form-control mx-auto w-auto" autocomplete="off" id="password" name="password" placeholder="Password" type="password">
+        </div>
+        <div class="row mb-3">
+            <input class="form-control mx-auto w-auto" autocomplete="off" id="password" name="confirm_password" placeholder="confirm password" type="password">
+        </div>
+        <button class="btn btn-primary mt-3" type="submit">Create Account</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+apology
+{% endblock %}
+
+{% block main %}
+    <div class="container-fluid">
+        <div class="alert alert-warning my-5">
+            <h4>Error</h4>
+            <p>{{ Message }}, click 
+            <a href="{{ link }}" class="alert-link">here</a> {{ linkmsg }}</p>
+        </div>
+    </div>
+{% endblock %}

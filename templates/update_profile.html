@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    update profile
+{% endblock %}
+
+
+{% block main %}
+<form action="/update_profile" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <input type="text" class="form-control w-auto w-auto mx-auto" autocomplete="off" placeholder="Mobile Number" name="phone_number">
+        </div>
+
+         <div class="mb-3">
+            <input type="email" class="form-control w-auto w-auto mx-auto" autocomplete="off" placeholder="you@gmail.com" name="email">
+        </div>
+        
+        <div class="mb-3">
+            <select name="service" id="" class="form-control w-auto mx-auto">
+                {% for service in services %}
+                    <option value="{{ service['service_name'] }}">{{ service['service_name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <input type="file" name="image" id="" class="form-control w-auto w-auto mx-auto" autocomplete="off">
+        </div>
+
+        <div class="mb-3">
+            <select  id="state-select" name="state" class="form-control w-auto mx-auto">
+                <!-- Add your state options here -->
+                <option disabled selected>State</option>
+                {% for state in states %}
+                <option value="{{ state.name }}">{{ state.name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+        <select  id="area-select" name="area" class="form-control w-auto mx-auto"> 
+            <!-- Add your LGA options here -->
+            <option disabled selected>Area</option>
+        </select>
+        </div>
+        <button type="submit" class="btn btn-primary">update profile</button>
+</form>
+{% endblock %}
+
+
+
+{% block script_src %}
+{{ url_for('static', filename='update-profile.js') }}
+{% endblock %}

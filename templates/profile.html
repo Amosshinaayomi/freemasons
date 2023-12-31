@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block main %}
+
+    <div class="flex-con my-0">
+        <div>
+        <img src="{{ image_path }}" alt="profile_picture" class="profile-img">
+            
+        <div class="text-con"><h3 >{{ fullname.firstname }}  {{ fullname.lastname }}</h3>        
+            <h6>Service: <strong>{{ service }}</strong></h6>
+
+            <div class="citystate">Available Location: <strong>{{ city }}, {{ state }}</strong></div>                
+            <div>Mobile Number: <strong>{{ phone_number }}</strong> 
+            </div>
+            <div>Email:<strong>{{ email }}</strong>
+            </div>
+
+            </div>     
+        </div>
+        </div>
+        <div class="text-con text-start center-width">
+        <div class="flex-con">
+            <div>
+            <h5 class="">Edit Profile</h5>
+
+            <form action="/edit" method="post" class="center-width">
+                <div class="row mb-4">
+                    <div class="col">
+                        <input type="text" autocomplete="off" placeholder="Firstname" name="firstname" class="form-control ">
+                    </div>
+                    <div class="col">
+                        <input type="text" autocomplete="off" placeholder="lastname" name="lastname" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col">
+                        <label for="">Mobile Number</label>
+                    </div>
+    
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="+1234567890" name="mobilenumber">
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col">
+                    <label for="email">Email</label>
+                    </div>
+                    <div class="col">
+                        <input type="text" name="email" placeholder="me@gmail.com" autocomplete="off" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col">
+                        <label for="State" class="text-start">Residing State</label>
+                </div>
+                    
+            
+                <div class="col">  
+                    <select name="state" id="state-select" class="form-control">
+                        <option disabled selected>State</option>
+                {% for state in states %}
+                    <option value="{{ state.name }}">{{ state.name }}</option>
+                {% endfor %}
+                    </select>
+                </div>
+            </div>
+    
+                
+            <div class="row">
+                <div class="col">
+    <label for="closest_known_place" class="label">Area</label>
+                </div>
+
+            <div class="col">                                 
+                <select name="area" class="form-control" id="area-select">
+                    <option disabled selected>Area</option>
+
+                </select>                  
+                </div>
+            </div>
+   
+            <button type="submit" class="btn btn-primary btn-large">Update Profile</button>
+
+            </form>
+            </div>
+            </div>
+        </div>
+
+
+
+
+{% endblock %}
+
+
+
+
+
+{% block script_src %}
+{{ url_for('static', filename='profile.js') }}
+{% endblock %}
