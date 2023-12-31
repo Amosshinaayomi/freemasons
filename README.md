@@ -1,5 +1,5 @@
 # Freemasons flask app
-a web app that shows you the info of the  freemasons in your city as long as they create a profile on the app and add their details.
+a web app that shows you the info of the  freemasons in your city as long as they create a profile on the app and add their details, only works in nigeria for now.
 
 
 This is a Flask web application that allows users to register, login, update their profile, and interact with various services.
