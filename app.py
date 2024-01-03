@@ -162,31 +162,29 @@ def register():
 
     if not firstname:
         return apology("firstname not provided", " to go back to registration page", "/register")
-    
+    firstname = firstname.strip()
     if not lastname:
         return apology("lastname not provided", " to go back to registration page", "/register")
-
+    lastname = lastname.strip()
     if not gender:
         return apology("please choose your gender", " to go back to registration page", "/register")
 
     if not password:
         return apology("password not provided", " to go back to registration page", "/register")
+    password = password.strip()    
     
-
     if not confirmed_password:
         return apology("confirm your password", " to go back to registration page", "/register")
-    
+    confirmed_password = confirmed_password.strip()
     if password != confirmed_password:
         return apology("passwords do not match", " to go back to registration page", "/register")
-    
+
     hash_password = generate_password_hash(password)
     confirm_hash = db.execute("SELECT id FROM users WHERE hash=?", hash_password)
 
     if confirm_hash:
         return apology("sorry, password has already been taken", " to go back to registration page", "/register")
     
-    firstname = firstname.strip()
-    lastname = lastname.strip()
 
     db.execute("INSERT INTO users(firstname, lastname, hash, gender) VALUES(?, ?, ?, ?)", firstname, lastname, hash_password, gender)
 
@@ -296,20 +294,17 @@ def profile():
 def check_for_masons():
     state = request.args.get('state')
     mason_in_state = db.execute("SELECT * FROM masons WHERE state=?", state)
-    states_with_masons = db.execute("SELECT state, COUNT(DISTINCT(state)) AS len FROM masons")
-    print(f'${states_with_masons}')
+    states_with_masons = db.execute("SELECT DISTINCT state FROM masons")
     if not states_with_masons:
-        states_with_masons = None
+        states_with_masons = []
     else:
-        len = int(states_with_masons[0]['len'])
-
-        for i in range(len):
-            states_with_masons[i] = states_with_masons[i]['state']
+        states_with_masons = [row['state'] for row in states_with_masons]
     if mason_in_state:
         mason_in_state = True
     else:
-        mason_in_state = False      
+        mason_in_state = False
     return jsonify(mason_in_state = mason_in_state, states_with_masons = states_with_masons)
+
 
 @app.route("/get-people")
 def get_people():
