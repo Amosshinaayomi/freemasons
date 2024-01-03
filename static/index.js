@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (states.length == 1)
                     {
                         word = 'is';
-                        alert(`There are no masons in ${stateName}. ${word}, ${states.join(', ')} is the only state with masons for now`);
+                        alert(`There are no masons in ${stateName}. ${states} is the only state with masons for now`);
                     }
                     else if (states.length > 1)
                     {
