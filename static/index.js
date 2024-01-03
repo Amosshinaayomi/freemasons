@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
     index_page_state_select.addEventListener('change', function() {
         const stateName = index_page_state_select.value;
 
-        // Get the first option
-        var firstOption = index_page_city_select.options[0];
-
         // Remove all options except the first one
         while (index_page_city_select.options.length > 1) {
             index_page_city_select.remove(1);
@@ -30,9 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!response.ok) {
                     throw new Error("HTTP error " + response.status);
                 }
+                // index_page_city_select.value = '';         
                 return response.json();
             })
             .then(townsCities => {
+
                 townsCities.towns_cities.forEach(townCity => {
                     const option = document.createElement('option');
                     option.value = townCity.name;
@@ -54,34 +53,55 @@ document.addEventListener('DOMContentLoaded', function() {
         markers.forEach(marker => map.removeLayer(marker));
         markers = [];
 
-        fetch(`/get-location?state=${stateName}&town_city=${townCityName}`)
-            .then(response => response.json())
-            .then(location => {
-                if (location && location.latitude && location.longitude) {
-                    map.setView([location.latitude, location.longitude], 14); // Zoom level adjusted to 14
+        fetch(`/check_for_masons?state=${stateName}`)
+            .then(response=> response.json())
+            .then(data => {
+                let message = `There are no masons in ${stateName}`
+                let states = [];
+                let word = ''
+                if (data.mason_in_state != true)
+                {
+                    states = data.states_with_masons;
+                    if (states.length == 1)
+                    {
+                        word = 'is';
+                    }
+                    else if (states.length > 1)
+                    {
+                        word = 'are'
+                    }
+                    alert(`There are no masons in ${stateName}. States with masons ${word}: ${states.join(', ')}`);
                 }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-
-        fetch(`/get-people?state=${stateName}&town_city=${townCityName}`)
-            .then(response => response.json())
-            .then(people => {
-                if (people.length === 0) {
-                    alert('No masons in this location');
-                } else {
-                    people.forEach(person => {
-                        var marker = L.marker([person.latitude, person.longitude], {icon: smallIcon}).addTo(map);
-                        markers.push(marker); // add the marker to the array
-                        var personName = `${person.firstname} ${person.lastname}`;
-                        var personInfo = `${person.phone_number}, ${person.email}, ${person.service_name}`;
-                        marker.bindPopup(`<b>${personName}</b><br>${personInfo}`).openPopup();
+                else
+                {
+                    fetch(`/get-location?state=${stateName}&town_city=${townCityName}`)
+                    .then(response => response.json())
+                    .then(location => {
+                    if (location && location.latitude && location.longitude) {
+                            map.setView([location.latitude, location.longitude], 14); // Zoom level adjusted to 14
+                        }
+                    })
+                    .then (
+                        fetch(`/get-people?state=${stateName}&town_city=${townCityName}`)
+                        .then(response => response.json())
+                        .then(people => {
+                            people.forEach(person => {
+                                var marker = L.marker([person.latitude, person.longitude], {icon: smallIcon}).addTo(map);
+                                markers.push(marker); // add the marker to the array
+                                var personName = `${person.firstname} ${person.lastname}`;
+                                var personInfo = `<strong>Contact:</strong>: ${person.phone_number}. <br> <strong>Email</strong> ${person.email}. <br> <strong>Services:</strong> ${person.service_name}`;
+                                marker.bindPopup(`<b>${personName}</b><br>${personInfo}`).openPopup();
+                        })})
+                    )
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })               
+                    .catch((error) => {
+                        console.error('Error:', error);
                     });
                 }
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
+
+        
+});
 });
