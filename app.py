@@ -37,13 +37,14 @@ def after_request(response):
     return response
 
 @app.route("/", methods=["GET", "POST"])
-@login_required
 def index():
-    fullname = db.execute("SELECT firstname, lastname FROM users WHERE id=?", session['user_id'])
-    if not fullname:
-        return redirect("/register")
-    fullname = fullname[0]
-    response = requests.get('https://nigeria-states-towns-lga.onrender.com/api/states')         
+    try:
+        firstname = db.execute("SELECT firstname, lastname FROM users WHERE id=?", session['user_id'])
+        firstname = firstname[0]['firstname'] 
+    except KeyError:
+        firstname = 'world'        
+
+    response = requests.get('https://nigeria-states-towns-lga.onrender.com/api/states')  
     states = response.json()
     services = db.execute("SELECT service_name FROM services")
     if not services:
@@ -51,11 +52,10 @@ def index():
         for service in services:
             try:
                 db.execute("INSERT INTO services (service_name) VALUES (?)", service)
-
             except:
                 break
         services = db.execute("SELECT service_name FROM services")   
-    return render_template("index.html", firstname=fullname['firstname'], lastname=fullname['lastname'], states=states, services=services)
+    return render_template("index.html", firstname=firstname, states=states, services=services)
 
 def get_location_by_name(name):
     """Get latitude and longitude by location name using geopy."""
@@ -67,14 +67,13 @@ def get_location_by_name(name):
             return None, None
     except GeocoderTimedOut:
         print(f"Error: geocode failed on input {name} with message timed out")
+        apology("Place coordinates can't be found")
         return None, None
 
 @app.route('/load-town-city', methods=['GET'])
-@login_required 
 def load_towns_cities_lgas():
     state_name = request.args.get('state')
     state_name = state_name.upper()
-    print(f"state name is {state_name}")    
 
     try:
         # Fetch towns and cities
@@ -86,10 +85,11 @@ def load_towns_cities_lgas():
         # response_lgas.raise_for_status()
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
-        return jsonify({"message": "Unable to fetch data from the server"}), 500
+        return apology(f"HTTP error ocurred: {err} Check your internet connection", None, None)
     except Exception as err:
         print(f"An error occurred: {err}")
-        return jsonify({"message": "Something went wrong"}), 500
+        return apology(f"An error occurred: {err} Check your internet connection", None, None)
+
     else:
         towns_cities = response_towns.json()
         # lgas = response_lgas.json()
@@ -98,7 +98,6 @@ def load_towns_cities_lgas():
         return jsonify({'towns_cities': towns_cities})
 
 @app.route('/get-location', methods=['GET'])
-@login_required 
 def get_location():
     state_name = request.args.get('state')
     town_city_name = request.args.get('town_city')
@@ -139,7 +138,6 @@ def login():
 
     if not row:
         return apology("invalid fullname and/ or password", " to go back to login page", "/login")
-
 
 
     if len(row) >= 1:
@@ -219,11 +217,10 @@ def update_profile():
             for service in services:
                 try:
                     db.execute("INSERT INTO services (service_name) VALUES (?)", service)
-
                 except:
                     break
-        services = db.execute("SELECT service_name FROM services")   
-        print(f'service is {services}')   
+        services = db.execute("SELECT service_name FROM services")
+        print(f'service are {services}')   
         return render_template("update_profile.html", states=states, services=services)
 
     phone_number = request.form.get("phone_number")
@@ -244,10 +241,6 @@ def update_profile():
     
     email = email.strip()
     phone_number = phone_number.strip()
-    state = state.strip()
-    area = area.strip()
-    service = service.strip()
-
     filename = image.filename
     try:
         unique_image_path = f"{os.urandom(16).hex()}.{filename.rsplit('.', 1)[1]}"
@@ -260,7 +253,6 @@ def update_profile():
         print("done here")
     except Exception:
         return apology("couldn't update details", " to go back to profile page", "/profile")
-
     return redirect("/profile")
 
 @app.route("/profile")
@@ -271,31 +263,25 @@ def profile():
             return redirect("/register")
         fullname = fullname[0]
         if request.method == "GET":
-            # get user image from db
+            # get user details from db
             user_image = db.execute("SELECT image_path FROM images WHERE person_id=?", session['user_id'])
-            
             phone_number = db.execute("SELECT phone_number FROM masons WHERE person_id=?", session['user_id'])
-
             state = db.execute("SELECT state FROM masons WHERE person_id=?", session['user_id'])
-
             city = db.execute("SELECT town FROM masons WHERE person_id=?", session['user_id'])
-
-
-
             email = db.execute("SELECT email FROM masons WHERE person_id=?", session['user_id'])
-
             service_id = db.execute("SELECT service_id FROM masons WHERE person_id=?", session['user_id'])
-
    
-
             if not phone_number or not email or not state:
                 return redirect("/update_profile")
+            
             service_id = service_id[0]['service_id']
             service_name = db.execute("SELECT service_name FROM services WHERE id=?", service_id) 
 
             user_image = user_image[0]['image_path']
             user_image = os.path.join(uploads_dir, user_image)
+
             service_name = service_name[0]['service_name']
+            
             phone_number = phone_number[0]['phone_number']
             state = state[0]['state']
             city = city[0]['town']
@@ -304,30 +290,35 @@ def profile():
             response = requests.get('https://nigeria-states-towns-lga.onrender.com/api/states')         
             states = response.json()
             return render_template("profile.html", image_path=user_image, states=states, email=email, city=city, phone_number=phone_number, service=service_name, fullname=fullname, state=state, user_state=state, user_city=city)
-        
-@app.route("/edit_info", methods=["POST"])
-@login_required
-def edit():
-    firstname = request.form.get("firstname")
-    lastname = request.form.get("lastname")
-    mobile_number = request.form.get("mobilenumber")
-    email = request.form.get("state")
-    area = request.form.get("area")
 
-    if not firstname or not lastname or not mobile_number or not email or not area:
-        return apology("no info was provided", "go click here to go back to profile page", "/profile")
-    
-    db.execute("")
 
+@app.route("/check_for_masons")
+def check_for_masons():
+    state = request.args.get('state')
+    mason_in_state = db.execute("SELECT * FROM masons WHERE state=?", state)
+    states_with_masons = db.execute("SELECT state, COUNT(DISTINCT(state)) AS len FROM masons")
+    print(f'${states_with_masons}')
+    if not states_with_masons:
+        states_with_masons = None
+    else:
+        len = int(states_with_masons[0]['len'])
+
+        for i in range(len):
+            states_with_masons[i] = states_with_masons[i]['state']
+    if mason_in_state:
+        mason_in_state = True
+    else:
+        mason_in_state = False      
+    return jsonify(mason_in_state = mason_in_state, states_with_masons = states_with_masons)
 
 @app.route("/get-people")
-@login_required
 def get_people():
     state = request.args.get('state')
     town_city = request.args.get('town_city')
 
     people = db.execute("SELECT users.firstname, users.lastname, masons.phone_number, masons.email, services.service_name FROM masons JOIN users ON masons.person_id = users.id JOIN services ON masons.service_id = services.id WHERE masons.state = ? AND masons.town = ?", state, town_city)
 
+    
     latitude, longitude = get_location_by_name(f"{town_city}, {state}")
 
     # Add the location data to the people data
@@ -336,7 +327,7 @@ def get_people():
         person['latitude'] = latitude + offset()
         person['longitude'] = longitude + offset()
 
-    return jsonify(people)
+    return jsonify(people) 
 
 
 @app.route('/edit', methods=['POST'])
