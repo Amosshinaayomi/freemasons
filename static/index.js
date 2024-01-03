@@ -65,12 +65,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (states.length == 1)
                     {
                         word = 'is';
+                        alert(`There are no masons in ${stateName}. States with masons ${word}: ${states.join(', ')}`);
                     }
                     else if (states.length > 1)
                     {
                         word = 'are'
+                        alert(`There are no masons in ${stateName}. States with masons ${word}: ${states.join(', ')}`);
                     }
-                    alert(`There are no masons in ${stateName}. States with masons ${word}: ${states.join(', ')}`);
+                    else
+                    alert(`There are no masons in any states yet!, Register to be our very first Mason`);                    {
+
+                    }
+
                 }
                 else
                 {
