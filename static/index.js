@@ -56,28 +56,26 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/check_for_masons?state=${stateName}`)
             .then(response=> response.json())
             .then(data => {
-                let message = `There are no masons in ${stateName}`
-                let states = [];
-                let word = ''
-                if (data.mason_in_state != true)
+                let masonInState = data.mason_in_state;
+                let statesWithMasons = data.states_with_masons;
+                if (masonInState != true)
                 {
-                    states = data.states_with_masons;
-                    if (states.length == 1)
+                    if (statesWithMasons.length == 1)
                     {
-                        word = 'is';
-                        alert(`There are no masons in ${stateName}. ${states} is the only state with masons for now`);
-                    }
-                    else if (states.length > 1)
-                    {
-                        word = 'are'
-                        alert(`There are no masons in ${stateName}. States with masons ${word}: ${states.join(', ')}`);
-                    }
-                    else
-                    alert(`There are no masons in any states yet!, Register to be our very first Mason`);                    {
-
+                        alert(`There are no masons in ${stateName}  only ${statesWithMasons.join(' ')}   state has masons for now`)
                     }
 
+                    else if (statesWithMasons.length > 1)
+                    {
+                        alert(`There are no masons in ${stateName}, list of states with masons are ${statesWithMasons.join(', ')}`)
+                    }
+
+                    else 
+                    {
+                        alert(`Register now to be our first Mason!`)
+                    }
                 }
+
                 else
                 {
                     fetch(`/get-location?state=${stateName}&town_city=${townCityName}`)
