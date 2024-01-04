@@ -20,7 +20,7 @@
         </div> -->
         <div class="col">
             <select name="state" id="state-select-search" class="form-control w-auto">
-                <option selected disabled>Select a state</option>
+                <option selected disabled value="">Select a state</option>
                 {% for state in states %}
                     <option value="{{ state.name }}">{{ state.name }}</option>
                 {% endfor %}
@@ -28,7 +28,7 @@
         </div>
         <div class="col">
             <select id="area-select-search" class="form-control w-auto">
-                <option selected disabled>Select an area near you</option>
+                <option selected disabled value="">Select an area near you</option>
             </select>
         </div>
     </div>
