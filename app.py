@@ -209,7 +209,6 @@ def update_profile():
         response = requests.get('https://nigeria-states-towns-lga.onrender.com/api/states')         
         states = response.json()
         services = db.execute("SELECT service_name FROM services")
-        print(f'services are {services}')
         if not services:
             services = get_services()
             for service in services:
@@ -218,7 +217,7 @@ def update_profile():
                 except:
                     break
         services = db.execute("SELECT service_name FROM services")
-        print(f'service are {services}')   
+
         return render_template("update_profile.html", states=states, services=services)
 
     phone_number = request.form.get("phone_number")
@@ -233,7 +232,7 @@ def update_profile():
     
 
     service_id = service_id[0]['id']
-    # print(f'service id is {service_id}')
+
     if not email or not phone_number  or not state or not area or not service:
         return apology("full details not provided", )
     
@@ -246,9 +245,7 @@ def update_profile():
         image.save(os.path.join(uploads_dir, unique_image_path))
         db.execute("INSERT INTO images (image_path, person_id) VALUES(?, ?)", unique_image_path, session["user_id"])
         db.execute('INSERT INTO masons (person_id, service_id, town, state, email, phone_number) VALUES (?,?,?,?,?,?)', session['user_id'], service_id, area, state, email, phone_number)
-        
-        print("info successfully stored in database")        
-        print("done here")
+
     except Exception:
         return apology("couldn't update details", " to go back to profile page", "/profile")
     return redirect("/profile")
@@ -290,8 +287,8 @@ def profile():
             return render_template("profile.html", image_path=user_image, states=states, email=email, city=city, phone_number=phone_number, service=service_name, fullname=fullname, state=state, user_state=state, user_city=city)
 
 
-@app.route("/check_for_masons")
-def check_for_masons():
+@app.route("/check_for_masons_in_state")
+def check_for_masons_in_state():
     state = request.args.get('state')
     mason_in_state = db.execute("SELECT * FROM masons WHERE state=?", state)
     states_with_masons = db.execute("SELECT DISTINCT state FROM masons")
@@ -304,6 +301,19 @@ def check_for_masons():
     else:
         mason_in_state = False
     return jsonify(mason_in_state = mason_in_state, states_with_masons = states_with_masons)
+
+
+@app.route("/check_for_masons_in_city")
+def check_for_masons_in_city():
+    city_name = request.args.get('city')
+    mason_in_city = db.execute('SELECT * FROM masons WHERE town=?', city_name)
+
+    if mason_in_city:
+        mason_in_city = True
+    else:
+        mason_in_city = False
+    print(f'mason in city is {mason_in_city}')
+    return jsonify(mason_in_city = mason_in_city)
 
 
 @app.route("/get-people")
